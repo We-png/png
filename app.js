@@ -10,7 +10,9 @@ const gameState = {
     playerName: '',
     tiles: [],
     speed: 2,
-    lastTick: 0
+    lastTick: 0,
+    lives: 3, // 新增生命值
+    gameOver: false // 新增遊戲結束狀態
 };
 
 // 音符設置
@@ -97,6 +99,8 @@ function createTile() {
 
 // 點擊方塊
 function hitTile(tile, element) {
+    if (gameState.gameOver) return;
+    
     synth.triggerAttackRelease(tile.note, '8n');
     element.classList.add('active');
     gameState.score += 10;
@@ -123,33 +127,69 @@ function gameLoop(timestamp) {
             
             if (tile.y > 500) {
                 element.classList.add('missed');
-                setTimeout(() => {
-                    element.remove();
-                    gameState.tiles = gameState.tiles.filter(t => t.tile.id !== tile.id);
-                }, 100);
+                // 遊戲結束條件：錯過方塊
+                endGame('錯過音樂方塊！');
+                return;
             }
         });
         
         gameState.lastTick = timestamp;
     }
     
-    if (gameState.isPlaying) {
+    if (gameState.isPlaying && !gameState.gameOver) {
         requestAnimationFrame(gameLoop);
     }
 }
 
+// 遊戲結束處理
+function endGame(reason) {
+    gameState.isPlaying = false;
+    gameState.gameOver = true;
+    startBtn.textContent = '重新開始';
+    
+    // 清除所有方塊
+    gameState.tiles.forEach(({element}) => {
+        element.remove();
+    });
+    gameState.tiles = [];
+    
+    // 顯示遊戲結束訊息
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'game-over-message';
+    messageDiv.innerHTML = `
+        <h2>遊戲結束</h2>
+        <p>原因: ${reason}</p>
+        <p>最終分數: ${gameState.score}</p>
+    `;
+    pianoTiles.appendChild(messageDiv);
+    
+    // 更新最終分數到 GUN
+    playersRef.get(gameState.playerName).put({
+        score: gameState.score,
+        lastActive: Date.now(),
+        status: 'game-over'
+    });
+}
+
 // 開始遊戲
 startBtn.addEventListener('click', () => {
+    // 清除之前的遊戲結束訊息
+    const oldMessage = pianoTiles.querySelector('.game-over-message');
+    if (oldMessage) {
+        oldMessage.remove();
+    }
+    
     if (!gameState.isPlaying) {
-        initPlayer();
-        gameState.isPlaying = true;
+        gameState.gameOver = false;
         gameState.score = 0;
         scoreElement.textContent = '0';
+        initPlayer();
+        gameState.isPlaying = true;
         startBtn.textContent = '遊戲進行中';
         
         // 定期產生新方塊
         const tileInterval = setInterval(() => {
-            if (!gameState.isPlaying) {
+            if (!gameState.isPlaying || gameState.gameOver) {
                 clearInterval(tileInterval);
                 return;
             }

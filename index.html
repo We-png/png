@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多人音樂鋼琴塊</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- GUN.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gun/sea.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gun/lib/webrtc.js"></script>
+    <!-- Tone.js for audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>多人音樂鋼琴塊</h1>
+        <div id="game-container">
+            <div id="stats">
+                <span>分數: <span id="score">0</span></span>
+                <span>在線玩家: <span id="player-count">1</span></span>
+            </div>
+            <div id="piano-tiles"></div>
+            <div id="player-list"></div>
+        </div>
+        <div id="controls">
+            <button id="start-btn">開始遊戲</button>
+            <input type="text" id="player-name" placeholder="輸入您的名稱">
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

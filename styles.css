@@ -114,3 +114,25 @@ h1 {
     display: flex;
     justify-content: space-between;
 }
+
+.game-over-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    z-index: 100;
+}
+
+.game-over-message h2 {
+    color: #f44336;
+    margin-bottom: 1rem;
+}
+
+.game-over-message p {
+    color: white;
+    margin: 0.5rem 0;
+}
